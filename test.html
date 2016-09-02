@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="build/react.js"></script>
+		<script src="build/react-dom.js"></script>
+		<script src="build/browser.min.js"></script>
+	</head>
+	<body>
+		<div id="container01"></div>
+		<script type="text/babel">
+			ReactDOM.render(
+				<h1>Hello world!</h1>,
+				document.getElementById("container01")
+			);
+		
+		</script>
+		
+		
+		<div id="container02"></div>
+		<script type="text/babel">
+			var names = ['Alice', 'Emily', 'Kate'];			
+			ReactDOM.render(
+				<div>
+					{
+						names.map(function(name){
+							return <div>Hello, {name}!</div>
+						})
+					}
+				</div>,
+				document.getElementById('container02')
+			);
+		
+		</script>
+		
+		
+		<div id="container03"></div>
+		<script type="text/babel">
+			var arr = [
+				<h1>First Container</h1>,
+				<h2>Second Container</h2>,
+			];
+			ReactDOM.render(
+				<div>{arr}</div>,
+				document.getElementById('container03')
+			);
+		</script>
+		
+		<!--组件-->
+		<!--解释说明：
+			 	Message就是个组件类。模板插入<Message />时,就会自动生成Message的一个实例。所有组件类都必须有自己的render方法，用于输出组件。
+			 	注意：
+			 	1、组件类的第一个字母必须大写，否则会报错。
+			 	2、组件类只能包含一个顶层标签（上面的例子中的是h1），否则也会报错
+			 	3、添加组件属性，class属性需要写成className，for属性需要写成htmlfor
+		-->
+		<div id="container04"></div>
+		<script type="text/babel">
+			var Message = React.createClass({
+				render: function(){
+					return <h1>Hello {this.props.name}</h1>;
+				}
+			});
+			
+			ReactDOM.render(
+				<Message name="Hebe" />,
+				document.getElementById('container04')
+			);			
+		</script>
+		
+		
+		<!--this.props.children-->
+		<!--解释说明：
+			 * this.props.children的值有三种可能：
+			 1、当前组件没有子节点，它就是undefined；
+			 2、如果有一个子节点，数据类型是object；
+			 3、如果有多个子节点，数据类型就是array
+			 
+			 React.Children.map：遍历子节点
+		-->
+			
+		<div id="container05"></div>
+		<script type="text/babel">
+			var NotesList = React.createClass({
+				render: function(){
+					return (
+						<ol>
+							{
+								React.Children.map(this.props.children, function(child){
+									return <li>{child}</li>;
+								})
+							}
+						</ol>
+					);
+				}
+			});
+			
+			ReactDOM.render(
+				<NotesList>
+					<span>hello</span>
+					<span>world</span>
+				</NotesList>,
+				document.getElementById('container05')
+			);			
+		</script>
+		
+		
+		<div id="container06"></div>
+		<script type="text/babel">
+			var MyTitle = React.createClass({
+				propType: {
+					title: React.PropTypes.string.isRequired,
+				},
+				
+				render: function(){
+					return <h1>{this.props.title}</h1>;
+				}
+			});
+			
+			var data = '标题';
+			ReactDOM.render(
+				<MyTitle title={data} />,
+				document.getElementById('container06')
+			);
+		</script>
+		
+		
+		<!--事件-->
+		<div id="container07"></div>
+		<script type="text/babel">
+			var MyComponent = React.createClass({
+				handleClick: function(){
+					this.refs.myTextInput.focus();
+				},
+				render: function(){
+					return (
+						<div>
+							<input type="text" ref="myTextInput" />
+							<input type="button" value="Focus the text input" onClick={this.handleClick} />
+						</div>
+					);
+				}
+			});
+			
+			ReactDOM.render(
+				<MyComponent />,
+				document.getElementById('container07')
+			);
+		</script>
+		
+		<!--this.status-->
+		<!--this.props和this.state都用于描述组件的特性，但是this.props表示那些一旦定义，就不再改变的特性，而this.state是会随着用户互动而产生变化的特性。-->
+		<div id="container08"></div>
+		<script type="text/babel">
+			var LikeButton = React.createClass({
+				getInitialState: function(){
+					return {liked: false};
+				},
+				handleClick: function(event){
+					this.setState({liked: !this.state.liked});
+				},
+				render: function(){
+					var text = this.state.liked ? 'like' : 'haven\'t liked';
+					return (
+						<p onClick={this.handleClick}>
+							You {text} this. Click to toggle.
+						</p>
+					);
+				}
+			});
+			
+			ReactDOM.render(
+				<LikeButton />,
+				document.getElementById('container08')
+			);
+		</script>
+		
+		
+		<!--表单-->
+		<div id="container09"></div>
+		<script type="text/babel">
+			var Input = React.createClass({
+				getInitialState: function(){
+					return {value: 'Hello!'};
+				},
+				handleChange: function(event){
+					this.setState({value: event.target.value});
+				},
+				render: function(){
+					var value = this.state.value;
+					return (
+						<div>
+							<input type="text" value={value} onChange={this.handleChange} />
+							<p>{value}</p>
+						</div>
+					);
+				}
+			});
+			
+			ReactDOM.render(
+				<Input />,
+				document.getElementById('container09')
+			);
+		</script>
+		
+		<div id="container10"></div>
+		<script type="text/babel">
+			var Hello = React.createClass({
+				getInitialState: function(){
+					return {
+						opacity: 1.0
+					};
+				},
+				
+				componentDidMount: function(){
+					this.timer = setInterval(function(){
+						var opacity = this.state.opacity;
+						opacity -= .05;
+						if(opacity < 0.1){
+							opacity = 1.0;
+						}
+						this.setState({
+							opacity: opacity
+						});
+					}.bind(this),100);
+				},
+				
+				render: function(){
+					return (
+						<div style={{opacity: this.state.opacity}}>
+							Hello {this.props.name}
+						</div>
+					);
+				}
+			});
+			
+			ReactDOM.render(
+				<Hello name="world" />,
+				document.getElementById('container10')
+			);
+		</script>
+		
+		
+		<!--Ajax-->
+		<div id="container11"></div>
+	</body>
+</html>
